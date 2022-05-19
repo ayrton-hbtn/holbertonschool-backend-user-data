@@ -1,8 +1,23 @@
 #!/usr/bin/env python3
-"""Personal data"""
+"""Handling personal data with the logging module"""
 
+import csv
 import logging
 import re
+
+with open('user_data.csv', 'r') as f:
+    PII_FIELDS: tuple = ()
+    reader = csv.reader(f)
+    fields = next(reader)
+    PII = ['name', 'address', 'email', 'ssn', 'passport', 'dl',
+           'cc', 'birth', 'dob', 'born', 'phone', 'telephone',
+           'vin', 'username', 'password', 'mac', 'ip']
+    for field in fields:
+        if field in PII:
+            if len(PII_FIELDS) < 5:
+                PII_FIELDS += (field,)
+            else:
+                break
 
 
 def filter_datum(fields: list, redaction: str,
@@ -16,6 +31,15 @@ def filter_datum(fields: list, redaction: str,
             message = re.sub(field.split('=')[1], redaction, message)
 
     return message
+
+
+def get_logger() -> logging.Logger:
+    user_logger = logging.Logger("user_data")
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(RedactingFormatter(PII_FIELDS))
+    user_logger.addHandler(handler)
+    return user_logger
 
 
 class RedactingFormatter(logging.Formatter):
@@ -36,5 +60,5 @@ class RedactingFormatter(logging.Formatter):
         uses the format() method from parent and
         applies and extra filter with filter_datum()
         """
-        log = super().format(record)
+        log: logging.Formatter = super().format(record)
         return filter_datum(self.fields, self.REDACTION, log, self.SEPARATOR)
