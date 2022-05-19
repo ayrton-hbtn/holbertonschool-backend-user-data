@@ -3,7 +3,26 @@
 
 import csv
 import logging
+import mysql.connector
 import re
+import os
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Returns a connector to the database"""
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+    db_username = os.getenv("PERSONAL_DATA_DB_USERNAME")
+    db_password = os.getenv("PERSONAL_DATA_DB_PASSWORD")
+    db_host = os.getenv("PERSONAL_DATA_DB_HOST")
+    db = mysql.connector.connect(
+        database=db_name if db_name else 'my_db',
+        host=db_host if db_host else 'localhost',
+        user=db_username if db_username else 'root',
+        password=db_password if db_password else 'root'
+    )
+
+    return db
+
 
 with open('user_data.csv', 'r') as f:
     PII_FIELDS: tuple = ()
