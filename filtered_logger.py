@@ -6,6 +6,7 @@ import logging
 import mysql.connector
 import re
 import os
+from typing import List
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
@@ -39,26 +40,26 @@ with open('user_data.csv', 'r') as f:
                 break
 
 
-def filter_datum(fields: list, redaction: str,
-                 message: str, separator: str):
-    """
-    filters the data in message that match the field
-    in fields list, and replace it's 'value' with redaction
-    """
-    for field in message.split(separator):
-        if field.split('=')[0] in fields:
-            message = re.sub(field.split('=')[1], redaction, message)
-
-    return message
-
-
 def get_logger() -> logging.Logger:
+    """returns a logger for logging user data"""
     user_logger = logging.Logger("user_data")
+    user_logger.setLevel(logging.INFO)
+    user_logger.propagate = False
+
     handler = logging.StreamHandler()
-    handler.setLevel(logging.INFO)
     handler.setFormatter(RedactingFormatter(PII_FIELDS))
     user_logger.addHandler(handler)
     return user_logger
+
+
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
+    """ returns the log message obfuscated """
+    temp = message
+    for field in fields:
+        temp = re.sub(field + "=.*?" + separator,
+                      field + "=" + redaction + separator, temp)
+    return temp
 
 
 class RedactingFormatter(logging.Formatter):
@@ -69,7 +70,7 @@ class RedactingFormatter(logging.Formatter):
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields):
+    def __init__(self, fields: List[str]):
         """inherits init from Formatter"""
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
@@ -81,3 +82,27 @@ class RedactingFormatter(logging.Formatter):
         """
         log: logging.Formatter = super().format(record)
         return filter_datum(self.fields, self.REDACTION, log, self.SEPARATOR)
+
+
+def main():
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute('SELECT * FROM users;')
+    rows = cursor.fetchall()
+
+    logger = get_logger()
+    field_names = [i[0] for i in cursor.description]
+
+    for row in rows:
+        message = ''
+        for field in range(len(row)):
+            message += f'{field_names[field]}={row[field]};'
+        logger.info(message)
+
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
