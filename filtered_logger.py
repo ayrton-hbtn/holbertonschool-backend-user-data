@@ -85,6 +85,12 @@ class RedactingFormatter(logging.Formatter):
 
 
 def main():
+    """
+    Use all the above functions
+    to read from a database and log the
+    rows from the 'users' table, filtering
+    personal data.
+    """
     db = get_db()
     cursor = db.cursor()
 
