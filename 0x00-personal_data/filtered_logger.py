@@ -8,6 +8,8 @@ import re
 import os
 from typing import List
 
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
+
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Returns a connector to the database"""
@@ -25,19 +27,19 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     return db
 
 
-with open('user_data.csv', 'r') as f:
-    PII_FIELDS: tuple = ()
-    reader = csv.reader(f)
-    fields = next(reader)
-    PII = ['name', 'address', 'email', 'ssn', 'passport', 'dl',
-           'cc', 'birth', 'dob', 'born', 'phone', 'telephone',
-           'vin', 'username', 'password', 'mac', 'ip']
-    for field in fields:
-        if field in PII:
-            if len(PII_FIELDS) < 5:
-                PII_FIELDS += (field,)
-            else:
-                break
+# with open('user_data.csv', 'r') as f:
+#     PII_FIELDS: tuple = ()
+#     reader = csv.reader(f)
+#     fields = next(reader)
+#     PII = ['name', 'address', 'email', 'ssn', 'passport', 'dl',
+#            'cc', 'birth', 'dob', 'born', 'phone', 'telephone',
+#            'vin', 'username', 'password', 'mac', 'ip']
+#     for field in fields:
+#         if field in PII:
+#             if len(PII_FIELDS) < 5:
+#                 PII_FIELDS += (field,)
+#             else:
+#                 break
 
 
 def get_logger() -> logging.Logger:
