@@ -9,7 +9,7 @@ class Auth():
     """Class for user authentication
     """
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ TO-DO implementation
+        """ Checks if the path requested requires authorization
         """
         if path is None:
             return True
@@ -22,7 +22,7 @@ class Auth():
         return True
 
     def authorization_header(self, request=None) -> str:
-        """ TO-DO implementation
+        """ Checks if the request header has an Authorization key
         """
         if request is None:
             return None
