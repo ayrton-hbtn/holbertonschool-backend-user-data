@@ -14,14 +14,16 @@ import os
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
-auth = None
 auth = getenv("AUTH_TYPE", None)
+
 if auth:
-    from api.v1.auth.auth import Auth
-    from api.v1.auth.basic_auth import BasicAuth
     if auth == 'basic_auth':
+        from api.v1.auth.basic_auth import BasicAuth
+
         auth = BasicAuth()
     else:
+        from api.v1.auth.auth import Auth
+
         auth = Auth()
 
 
@@ -47,13 +49,14 @@ def forbidden(error) -> str:
 
 
 @app.before_request
-def validate_auth(auth=auth):
+def validate_auth(auth=auth) -> None:
+    """ Validates authentication if needed
     """
-    """
-    if auth is None:
-        return
-    excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
-                      '/api/v1/forbidden/']
+    excluded_paths = [
+        '/api/v1/status/',
+        '/api/v1/unauthorized/',
+        '/api/v1/forbidden/'
+        ]
     if auth.require_auth(request.path, excluded_paths):
         if auth.authorization_header(request) is None:
             abort(401)
