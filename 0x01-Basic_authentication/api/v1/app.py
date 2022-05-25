@@ -2,9 +2,7 @@
 """
 Route module for the API
 """
-from multiprocessing import AuthenticationError
 from os import getenv
-from unittest.mock import NonCallableMagicMock
 from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
