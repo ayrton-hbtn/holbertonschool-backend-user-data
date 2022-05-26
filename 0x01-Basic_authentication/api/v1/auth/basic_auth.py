@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Basic Authentication"""
 
+from asyncio.base_events import _ExceptionHandler
 from .auth import Auth
 from typing import Tuple, TypeVar
 import base64
@@ -66,12 +67,10 @@ class BasicAuth(Auth):
         try:
             from models.user import User
 
-            if not User.all():
-                return None
             users = User.search({"email": user_email})
             for user in users:
                 if user.is_valid_password(user_pwd):
                     return user
             return None
-        except Exception as e:
-            print(e)
+        except Exception:
+            return None
