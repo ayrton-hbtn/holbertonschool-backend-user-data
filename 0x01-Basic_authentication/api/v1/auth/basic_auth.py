@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Basic Authentication"""
 
-from asyncio.base_events import _ExceptionHandler
 from .auth import Auth
 from typing import Tuple, TypeVar
 import base64

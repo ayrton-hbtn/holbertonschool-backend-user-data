@@ -1,3 +1,5 @@
 *pycache*
 *.pyc
 *main*
+*.vscode*
+*.json
