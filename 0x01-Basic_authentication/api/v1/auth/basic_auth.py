@@ -2,7 +2,7 @@
 """Basic Authentication"""
 
 from .auth import Auth
-from typing import Tuple
+from typing import Tuple, TypeVar
 import base64
 
 
@@ -51,3 +51,27 @@ class BasicAuth(Auth):
         else:
             credentials = decoded_base64_authorization_header.split(":")
             return (credentials[0], credentials[1])
+
+    def user_object_from_credentials(
+            self,
+            user_email: str, user_pwd: str) -> TypeVar('User'):
+        """
+        returns the User instance based on their email and password
+        """
+
+        if user_email is None or not isinstance(user_email, str) or\
+                user_pwd is None or not isinstance(user_pwd, str):
+
+            return None
+        try:
+            from models.user import User
+
+            if not User.all():
+                return None
+            users = User.search({"email": user_email})
+            for user in users:
+                if user.is_valid_password(user_pwd):
+                    return user
+            return None
+        except Exception as e:
+            print(e)
