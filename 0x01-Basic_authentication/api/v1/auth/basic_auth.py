@@ -66,11 +66,10 @@ class BasicAuth(Auth):
             return None
         try:
             from models.user import User
-
             users = User.search({"email": user_email})
-            for user in users:
-                if user.is_valid_password(user_pwd):
-                    return user
-            return None
         except Exception:
             return None
+        for user in users:
+            if user.is_valid_password(user_pwd):
+                return user
+        return None
