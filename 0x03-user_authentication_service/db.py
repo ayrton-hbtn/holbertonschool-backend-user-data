@@ -38,4 +38,5 @@ class DB:
 
         self._session.add(new_user)
         self._session.commit()
-        return self._session.query(User).filter_by(email=email).first()
+        # return self._session.query(User).filter_by(email=email).first()
+        return new_user
