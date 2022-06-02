@@ -1,7 +1,6 @@
 """DB module
 """
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
@@ -38,5 +37,5 @@ class DB:
 
         self._session.add(new_user)
         self._session.commit()
-        # return self._session.query(User).filter_by(email=email).first()
+
         return new_user
