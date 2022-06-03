@@ -23,7 +23,7 @@ def users():
     try:
         AUTH.register_user(email, password)
         return jsonify({
-            "email": "<registered email>",
+            "email": email,
             "message": "user created"
             })
     except ValueError:
